@@ -4,6 +4,7 @@ import dao.DAOException;
 import dao.ProductoDAO;
 import modelo.Producto;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -70,7 +71,37 @@ public class ProductoDAOImplFicheros implements ProductoDAO {
      */
     @Override
     public boolean actualizar(Producto producto) throws DAOException {
-        return false;
+        try (RandomAccessFile raf = new RandomAccessFile(ruta.toString(), "rw")) {
+            long numero = devuelveNumeroDeRegistro(raf, producto.getReferencia());
+            if (numero == -1) return false;
+            escribirEn(raf, numero, producto);
+            return true;
+        } catch (IOException e) {
+            throw new DAOException("Error en actualizar producto" + e);
+        }
+    }
+
+    /**
+     *
+     * @param raf
+     * @param referencia
+     * @return El num del registro con esa referencia o -1 si no lo encuentra
+     */
+    private long devuelveNumeroDeRegistro(RandomAccessFile raf, int referencia) throws DAOException {
+        long numRegistro = -1;
+        try{
+            for (int i = 0; i < contar(raf); i++) {
+                if(raf.readInt() == referencia){
+                    numRegistro = i + 1;
+                    break;
+                }
+                raf.skipBytes(8);
+            }
+
+        } catch (IOException e) {
+            throw new DAOException("Error" + e);
+        }
+        return numRegistro;
     }
 
     // MÉTODOS AUXILIARES

@@ -42,6 +42,24 @@ public class DemoDAORAF {
             // 2. Mostrar los productos.
             System.out.println("=== Precios iniciales ===");
             mostrar(dao.listar());
+
+            // 3. Actualizar precios. -10% si precio > 100
+            for (Producto p : dao.listar()) {
+                double nuevoPrecio;
+                if (p.getPrecio() > 100) {
+                    nuevoPrecio = p.getPrecio() * 0.90;
+                } else {
+                    nuevoPrecio = p.getPrecio() * 1.10;
+                }
+                nuevoPrecio = (double) Math.round(nuevoPrecio * 100) / 100;
+                Producto nuevo = new Producto(p.getReferencia(), nuevoPrecio);
+                dao.actualizar(nuevo);
+            }
+
+            // 4. Mostrar los productos.
+            System.out.println("=== Precios tras actualización de precios ===");
+            mostrar(dao.listar());
+
         } catch (DAOException e) {
             System.err.println("Error al acceder al fichero de productos: " + e.getMessage());
         }
@@ -58,12 +76,14 @@ public class DemoDAORAF {
         }
     }
 
+
     private static void mostrar(List<Producto> productos) {
         System.out.printf("%-10s %10s%n", "Referencia", "Precio");
         for (Producto p : productos) {
             System.out.printf("%-10d %10.2f%n", p.getReferencia(), p.getPrecio());
         }
     }
+
 
 
 } // Fin de la clase app.DemoDAORAF
