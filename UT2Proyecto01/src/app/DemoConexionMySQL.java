@@ -14,8 +14,14 @@ public class DemoConexionMySQL {
 
                 System.out.println("Conexion establecida OK.");
 
-        } catch (DAOException | SQLException e) {
+        } catch (DAOException e) {
             System.err.println("ERROR AL CONECTAR " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("ERROR AL CONECTAR " + e.getMessage());
+            System.out.println("Motivo: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("Codigo: " + e.getErrorCode());
+
         }
     }
 
