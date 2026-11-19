@@ -8,6 +8,7 @@ import modelo.Producto;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 public class ProductoDAOImplMySQL implements ProductoDAO {
@@ -32,8 +33,10 @@ public class ProductoDAOImplMySQL implements ProductoDAO {
             ps.setInt(1, producto.getReferencia());
             ps.setDouble(2, producto.getPrecio());
             ps.executeUpdate();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new DAOException("Ya existe un producto con esa referencia: " + producto.getReferencia(), e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DAOException("Error en la insercion de producto " + producto.getReferencia(), e);
         }
     }
 
